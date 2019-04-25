@@ -1,6 +1,7 @@
 package org.dailystudio.onepiece.security.provider;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.repository.AccountRepository;
 import org.dailystudio.onepiece.security.AccountContextService;
@@ -11,15 +12,17 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
 
+@Component
 @RequiredArgsConstructor
+@Slf4j
 public class FormLoginAuthenticationProvider implements AuthenticationProvider {
-
-    private AccountContextService accountContextService;
-    private AccountRepository accountRepository;
-    private PasswordEncoder passwordEncoder;
+    
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
