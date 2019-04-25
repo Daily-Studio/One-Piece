@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
  */
 public class AccountContext extends User {
 
-    private AccountContext(String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        super(email, password, authorities);
+    private AccountContext(String idx, String password, Collection<? extends GrantedAuthority> authorities) {
+        super(idx, password, authorities);
     }
 
     public static AccountContext fromAccountModel(Account account) {
-        return new AccountContext(account.getEmail(), account.getPassword(), parseAuthorites(account.getAccountRole()));
+        return new AccountContext(account.getId().toString(), account.getPassword(), parseAuthorites(account.getAccountRole()));
     }
 
     private static List<SimpleGrantedAuthority> parseAuthorites(AccountRole role) {

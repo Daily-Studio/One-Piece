@@ -12,8 +12,8 @@ public class PostAuthorizationToken extends UsernamePasswordAuthenticationToken 
         super(principal, credentials, authorities);
     }
 
-    public static PostAuthorizationToken getTokenFromAccountContext(AccountContext accountContext){
-        return new PostAuthorizationToken(accountContext.getUsername(),accountContext.getPassword(),accountContext.getAuthorities());
+    public static PostAuthorizationToken getTokenFromAccountContext(AccountContext accountContext) {
+        return new PostAuthorizationToken(accountContext.getUsername(), accountContext.getPassword(), accountContext.getAuthorities());
     }
 
 }

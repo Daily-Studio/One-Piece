@@ -3,7 +3,7 @@ package org.dailystudio.onepiece.security.provider;
 import lombok.RequiredArgsConstructor;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.repository.AccountRepository;
-import org.dailystudio.onepiece.security.token.AccountContextService;
+import org.dailystudio.onepiece.security.AccountContextService;
 import org.dailystudio.onepiece.security.token.PostAuthorizationToken;
 import org.dailystudio.onepiece.security.token.PreAuthorizationToken;
 import org.springframework.security.authentication.AuthenticationProvider;

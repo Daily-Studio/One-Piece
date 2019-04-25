@@ -1,4 +1,4 @@
-package org.dailystudio.onepiece.security.token;
+package org.dailystudio.onepiece.security;
 
 import lombok.RequiredArgsConstructor;
 import org.dailystudio.onepiece.domain.Account;
