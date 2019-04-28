@@ -17,18 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-public class FormLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private AuthenticationSuccessHandler authenticationSuccessHandler;
     private AuthenticationFailureHandler authenticationFailureHandler;
 
-    public FormLoginFilter(String defaultFilterProcessesUrl, AuthenticationSuccessHandler authenticationSuccessHandler, AuthenticationFailureHandler authenticationFailureHandler) {
+    public AjaxLoginFilter(String defaultFilterProcessesUrl, AuthenticationSuccessHandler authenticationSuccessHandler, AuthenticationFailureHandler authenticationFailureHandler) {
         super(defaultFilterProcessesUrl);
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
     }
 
-//    protected FormLoginFilter(String defaultFilterProcessesUrl) {
+//    protected AjaxLoginFilter(String defaultFilterProcessesUrl) {
 //        super(defaultFilterProcessesUrl);
 //    }
 

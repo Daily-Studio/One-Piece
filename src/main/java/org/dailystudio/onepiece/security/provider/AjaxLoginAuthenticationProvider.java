@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.repository.AccountRepository;
+import org.dailystudio.onepiece.security.AccountContext;
 import org.dailystudio.onepiece.security.AccountContextService;
 import org.dailystudio.onepiece.security.token.PostAuthorizationToken;
 import org.dailystudio.onepiece.security.token.PreAuthorizationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +21,9 @@ import java.util.NoSuchElementException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class FormLoginAuthenticationProvider implements AuthenticationProvider {
-    
-    private final AccountRepository accountRepository;
+public class AjaxLoginAuthenticationProvider implements AuthenticationProvider {
+
+    private final AccountContextService accountContextService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -31,11 +33,10 @@ public class FormLoginAuthenticationProvider implements AuthenticationProvider {
         String email = token.getEmail();
         String password = token.getPassword();
 
-        Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("일치하는 아이디가 존재하지 않습니다."));
+        UserDetails userDetails = accountContextService.loadUserByUsername(email);
 
-        if (isCorrectPassword(password, account)) {
-            return PostAuthorizationToken.getTokenFromAccountContext(account.toAccountContext());
+        if (isCorrectPassword(password, userDetails)) {
+            return PostAuthorizationToken.getTokenFromAccountContext((AccountContext) userDetails);
         }
 
         throw new BadCredentialsException("인증정보가 올바르지 않습니다.");
@@ -49,7 +50,7 @@ public class FormLoginAuthenticationProvider implements AuthenticationProvider {
         return PreAuthorizationToken.class.isAssignableFrom(authentication);
     }
 
-    private boolean isCorrectPassword(String password, Account account) {
-        return passwordEncoder.matches(account.getPassword(), password);
+    private boolean isCorrectPassword(String password, UserDetails userDetails) {
+        return passwordEncoder.matches(userDetails.getPassword(), password);
     }
 }

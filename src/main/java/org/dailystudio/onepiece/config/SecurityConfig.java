@@ -1,9 +1,10 @@
 package org.dailystudio.onepiece.config;
 
 import lombok.RequiredArgsConstructor;
-import org.dailystudio.onepiece.security.filter.FormLoginFilter;
-import org.dailystudio.onepiece.security.handler.FormLoginSuccessHandler;
-import org.dailystudio.onepiece.security.provider.FormLoginAuthenticationProvider;
+import org.dailystudio.onepiece.security.filter.AjaxLoginFilter;
+import org.dailystudio.onepiece.security.handler.AjaxLoginFailureHandler;
+import org.dailystudio.onepiece.security.handler.AjaxLoginSuccessHandler;
+import org.dailystudio.onepiece.security.provider.AjaxLoginAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -23,8 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final FormLoginSuccessHandler formLoginSuccessHandler;
-    private final FormLoginAuthenticationProvider formLoginProvider;
+    private static final String LOGIN_END_POINT = "/api/account/login";
+
+    private final AjaxLoginAuthenticationProvider formLoginProvider;
+    private final AjaxLoginSuccessHandler ajaxLoginSuccessHandler;
+    private final AjaxLoginFailureHandler ajaxLoginFailureHandler;
 
 
     @Bean
@@ -38,10 +40,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(this.formLoginProvider);
     }
 
-    protected FormLoginFilter formLoginFilter() throws Exception {
-        FormLoginFilter filter = new FormLoginFilter("/api/account/login", formLoginSuccessHandler, null);
+    protected AjaxLoginFilter ajaxLoginFilter() throws Exception {
+        AjaxLoginFilter filter = new AjaxLoginFilter(LOGIN_END_POINT, ajaxLoginSuccessHandler, ajaxLoginFailureHandler);
         filter.setAuthenticationManager(getAuthenticationManager());
-        filter.setAuthenticationSuccessHandler(formLoginSuccessHandler);
+        filter.setAuthenticationSuccessHandler(ajaxLoginSuccessHandler);
+        filter.setAuthenticationFailureHandler(ajaxLoginFailureHandler);
         return filter;
     }
 
@@ -49,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(formLoginFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(ajaxLoginFilter(), UsernamePasswordAuthenticationFilter.class);
         http
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

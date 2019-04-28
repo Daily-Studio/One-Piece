@@ -32,13 +32,7 @@ public class Account {
     private AccountRole accountRole;
 
     public AccountContext toAccountContext(){
-        return AccountContext.fromAccountModel(this);
+        return new AccountContext(this);
     }
 }
 
-//우리가 구현해야할 내용들
-//1. 요청을 받아 처리할 필터
-//2. Manager에 등록할 Auth Provider
-//3. 인증 정보를 담을 DTO객체들
-//4. 인증 성공/실패 핸들러
-//5. 인증 성공/실패시 사용할 Authentication 객체

@@ -22,14 +22,16 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
+public class AjaxLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtFactory jwtFactory;
     private final ObjectMapper objectMapper;
 
     // 정상적으로 인증이 이루어 졌다면 auth 는 PostAuthorizationToken이라고 생각하면된다.
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse res, Authentication auth) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest req,
+                                        HttpServletResponse res,
+                                        Authentication auth) throws IOException, ServletException {
         PostAuthorizationToken token = (PostAuthorizationToken) auth;
         AccountContext context = (AccountContext) token.getPrincipal();
         JwtResDto jwtResDto = new JwtResDto(jwtFactory.create(context));

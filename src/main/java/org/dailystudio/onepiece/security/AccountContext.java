@@ -1,13 +1,12 @@
 package org.dailystudio.onepiece.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.domain.AccountRole;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,14 +14,16 @@ import java.util.stream.Collectors;
  * 유저 정보를 인증과정에서 처리하기 위해서 만들어진 클래스이다.
  * UserDetails 라는 Spring Security에서 주어진 것을 사용하여 인증과정을 다룬다.
  */
+@Slf4j
 public class AccountContext extends User {
 
-    private AccountContext(String idx, String password, Collection<? extends GrantedAuthority> authorities) {
-        super(idx, password, authorities);
-    }
+//    //기본생성자
+//    private AccountContext(String idx, String password, Collection<? extends GrantedAuthority> authorities) {
+//        super(idx, password, authorities);
+//    }
 
-    public static AccountContext fromAccountModel(Account account) {
-        return new AccountContext(account.getId().toString(), account.getPassword(), parseAuthorites(account.getAccountRole()));
+    public AccountContext(Account account) {
+        super(account.getId().toString(), account.getPassword(), parseAuthorites(account.getAccountRole()));
     }
 
     private static List<SimpleGrantedAuthority> parseAuthorites(AccountRole role) {

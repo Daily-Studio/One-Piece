@@ -1,6 +1,7 @@
 package org.dailystudio.onepiece.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.repository.AccountRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +16,10 @@ import java.util.NoSuchElementException;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AccountContextService implements UserDetailsService {
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
