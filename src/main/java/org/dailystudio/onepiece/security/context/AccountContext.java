@@ -1,8 +1,10 @@
-package org.dailystudio.onepiece.security;
+package org.dailystudio.onepiece.security.context;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.domain.AccountRole;
+import org.dailystudio.onepiece.security.jwt.JwtInfo;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
@@ -26,10 +28,20 @@ public class AccountContext extends User {
         super(account.getId().toString(), account.getPassword(), parseAuthorites(account.getAccountRole()));
     }
 
+    public AccountContext(DecodedJWT decodedJWT) {
+        super(decodedJWT.getClaim(JwtInfo.USER_IDX).asString(),
+                "",
+                parseAuthorites(decodedJWT.getClaim(JwtInfo.USER_AUTHORITY).asString()));
+    }
+
     private static List<SimpleGrantedAuthority> parseAuthorites(AccountRole role) {
         return Arrays.asList(role).stream()
                 .map(eachRole -> new SimpleGrantedAuthority(eachRole.getRoleName()))
                 .collect(Collectors.toList());
+    }
+
+    private static List<SimpleGrantedAuthority> parseAuthorites(String role) {
+        return parseAuthorites(AccountRole.getRoleByName(role));
     }
 
 }

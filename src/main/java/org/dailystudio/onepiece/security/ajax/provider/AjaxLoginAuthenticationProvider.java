@@ -1,11 +1,9 @@
-package org.dailystudio.onepiece.security.provider;
+package org.dailystudio.onepiece.security.ajax.provider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dailystudio.onepiece.domain.Account;
-import org.dailystudio.onepiece.repository.AccountRepository;
-import org.dailystudio.onepiece.security.AccountContext;
-import org.dailystudio.onepiece.security.AccountContextService;
+import org.dailystudio.onepiece.security.context.AccountContext;
+import org.dailystudio.onepiece.security.context.AccountContextService;
 import org.dailystudio.onepiece.security.token.PostAuthorizationToken;
 import org.dailystudio.onepiece.security.token.PreAuthorizationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,8 +13,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.NoSuchElementException;
 
 @Component
 @RequiredArgsConstructor
@@ -51,6 +47,6 @@ public class AjaxLoginAuthenticationProvider implements AuthenticationProvider {
     }
 
     private boolean isCorrectPassword(String password, UserDetails userDetails) {
-        return passwordEncoder.matches(userDetails.getPassword(), password);
+        return passwordEncoder.matches(password, userDetails.getPassword());
     }
 }

@@ -1,4 +1,4 @@
-package org.dailystudio.onepiece.security.handler;
+package org.dailystudio.onepiece.security.jwt.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,12 +14,12 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class AjaxLoginFailureHandler implements AuthenticationFailureHandler {
-
+public class JwtFailureHandler implements AuthenticationFailureHandler {
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest req, HttpServletResponse res, AuthenticationException exception) throws IOException, ServletException {
         log.warn("[BadCredentialsException] credentials exception {}", exception.getMessage());
-        processResponse(response);
+        processResponse(res);
+        log.info("[request failure] -> {}", req.getRequestURI());
     }
 
     public void processResponse(HttpServletResponse res) throws IOException {

@@ -1,6 +1,7 @@
 package org.dailystudio.onepiece.security.token;
 
-import org.dailystudio.onepiece.security.AccountContext;
+
+import org.dailystudio.onepiece.security.context.AccountContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -15,5 +16,10 @@ public class PostAuthorizationToken extends UsernamePasswordAuthenticationToken 
     public static PostAuthorizationToken getTokenFromAccountContext(AccountContext accountContext) {
         return new PostAuthorizationToken(accountContext, accountContext.getPassword(), accountContext.getAuthorities());
     }
+
+    public static PostAuthorizationToken getTokenFromJwtAccountContext(AccountContext accountContext){
+        return new PostAuthorizationToken(accountContext.getUsername(),accountContext.getPassword(),accountContext.getAuthorities());
+    }
+
 
 }

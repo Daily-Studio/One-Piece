@@ -1,16 +1,39 @@
 package org.dailystudio.onepiece.api;
 
+import io.swagger.annotations.ApiImplicitParam;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.dto.account.AccountLoginReqDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.dailystudio.onepiece.dto.account.AccountSaveReq;
+import org.dailystudio.onepiece.service.AccountService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("api/account")
 @Slf4j
 public class AccountController {
+
+    private final AccountService accountService;
+
+    @GetMapping("")
+    @ApiImplicitParam(name = "JWT", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<Account> geyMyInfo(@ApiIgnore Authentication authentication) {
+        final Long userIdx = Long.valueOf(authentication.getPrincipal().toString());
+        final Account account = accountService.getAccount(userIdx);
+        return ResponseEntity.ok(account);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<Boolean> signUp(@RequestBody AccountSaveReq accountSaveReq) {
+        return ResponseEntity.ok(accountService.save(accountSaveReq));
+    }
 
     @PostMapping("/login")
     public void login(@RequestBody AccountLoginReqDto loginReqDto) {
@@ -25,7 +48,7 @@ public class AccountController {
 //5. 인증 성공/실패시 사용할 Authentication 객체
 
 
-//인증의 순서를 따라가 보면
+//인증의 순서를 따라가 보면    x
 //1.요청이 들어오면 요청의 엔드포인트에 해당하는 필터를 거치게된다!
 //2.이때 인증에 필요한 정보를 우리가 UsernamePasswordAuthenticationToken 라는 Token을 이용해서 하는데
 //2-1. 인증 전,후 로 Token이 필요하므로 우리는 두개의 Token을 작성한다.

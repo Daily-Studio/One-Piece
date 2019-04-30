@@ -1,10 +1,10 @@
-package org.dailystudio.onepiece.security.handler;
+package org.dailystudio.onepiece.security.ajax.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dailystudio.onepiece.dto.jwt.JwtResDto;
-import org.dailystudio.onepiece.security.AccountContext;
+import org.dailystudio.onepiece.security.context.AccountContext;
 import org.dailystudio.onepiece.security.jwt.JwtFactory;
 import org.dailystudio.onepiece.security.jwt.JwtInfo;
 import org.dailystudio.onepiece.security.token.PostAuthorizationToken;

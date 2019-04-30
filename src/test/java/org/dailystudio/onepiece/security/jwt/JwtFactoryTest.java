@@ -2,7 +2,7 @@ package org.dailystudio.onepiece.security.jwt;
 
 import org.dailystudio.onepiece.domain.Account;
 import org.dailystudio.onepiece.repository.AccountRepository;
-import org.dailystudio.onepiece.security.AccountContext;
+import org.dailystudio.onepiece.security.context.AccountContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,8 +1,9 @@
 package org.dailystudio.onepiece.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.dailystudio.onepiece.security.AccountContext;
+import org.dailystudio.onepiece.security.context.AccountContext;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ public class Account {
     @Column(name = "ACCOUNT_ID")
     private Long id;
 
-    @Column(name = "ACCOUNT_EMAIL")
+    @Column(name = "ACCOUNT_EMAIL", unique = true)
     @NotNull
     private String email;
 
@@ -31,7 +32,14 @@ public class Account {
     @Enumerated(value = EnumType.STRING)
     private AccountRole accountRole;
 
-    public AccountContext toAccountContext(){
+    @Builder
+    public Account(@NotNull String email, @NotNull String password) {
+        this.email = email;
+        this.password = password;
+        this.accountRole = AccountRole.USER;
+    }
+
+    public AccountContext toAccountContext() {
         return new AccountContext(this);
     }
 }

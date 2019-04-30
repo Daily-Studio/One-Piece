@@ -6,7 +6,8 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.dailystudio.onepiece.security.AccountContext;
+import org.dailystudio.onepiece.security.context.AccountContext;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -47,9 +48,18 @@ public class JwtFactory {
 
     public static DecodedJWT decode(final String token) {
         try {
-            return JWT.decode(token);
+            DecodedJWT decodedJWT = JWT.decode(token);
+            if (decodedJWT == null) {
+                throw new BadCredentialsException("토큰 해독 오류.");
+            }
+            return decodedJWT;
         } catch (JWTDecodeException decodeException) {
             return null;
         }
+    }
+
+    public static AccountContext getAccountContext(final String token) {
+        DecodedJWT decodedJWT = decode(token);
+        return new AccountContext(decodedJWT);
     }
 }

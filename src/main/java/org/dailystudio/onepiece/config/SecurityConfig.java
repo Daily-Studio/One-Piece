@@ -1,10 +1,14 @@
 package org.dailystudio.onepiece.config;
 
 import lombok.RequiredArgsConstructor;
-import org.dailystudio.onepiece.security.filter.AjaxLoginFilter;
-import org.dailystudio.onepiece.security.handler.AjaxLoginFailureHandler;
-import org.dailystudio.onepiece.security.handler.AjaxLoginSuccessHandler;
-import org.dailystudio.onepiece.security.provider.AjaxLoginAuthenticationProvider;
+import org.dailystudio.onepiece.security.ajax.filter.AjaxLoginFilter;
+import org.dailystudio.onepiece.security.ajax.handler.AjaxLoginFailureHandler;
+import org.dailystudio.onepiece.security.ajax.handler.AjaxLoginSuccessHandler;
+import org.dailystudio.onepiece.security.ajax.provider.AjaxLoginAuthenticationProvider;
+import org.dailystudio.onepiece.security.jwt.filter.JwtAuthenticationFilter;
+import org.dailystudio.onepiece.security.jwt.handler.JwtFailureHandler;
+import org.dailystudio.onepiece.security.jwt.provider.JwtAuthenticationProvider;
+import org.dailystudio.onepiece.security.matcher.FilterSkipMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,15 +20,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String SIGNUP_END_POINT = "/api/account/signup";
     private static final String LOGIN_END_POINT = "/api/account/login";
+    private static final String NEED_JWT_POINT = "/api/**";
 
-    private final AjaxLoginAuthenticationProvider formLoginProvider;
+    private final AjaxLoginAuthenticationProvider ajaxLoginProvider;
+    private final JwtFailureHandler jwtFailureHandler;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final AjaxLoginSuccessHandler ajaxLoginSuccessHandler;
     private final AjaxLoginFailureHandler ajaxLoginFailureHandler;
 
@@ -37,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth
-                .authenticationProvider(this.formLoginProvider);
+                .authenticationProvider(this.ajaxLoginProvider)
+                .authenticationProvider(this.jwtAuthenticationProvider);
     }
 
     protected AjaxLoginFilter ajaxLoginFilter() throws Exception {
@@ -48,11 +59,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
+    protected JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        FilterSkipMatcher skipMatcher = getSkipMatcher();
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(skipMatcher, jwtFailureHandler);
+        filter.setAuthenticationManager(getAuthenticationManager());
+        filter.setAuthenticationFailureHandler(jwtFailureHandler);
+        return filter;
+    }
+
+    private FilterSkipMatcher getSkipMatcher() {
+        return new FilterSkipMatcher(Arrays.asList(LOGIN_END_POINT, SIGNUP_END_POINT), NEED_JWT_POINT);
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(ajaxLoginFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(ajaxLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

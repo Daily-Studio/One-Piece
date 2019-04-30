@@ -1,4 +1,4 @@
-package org.dailystudio.onepiece.security.filter;
+package org.dailystudio.onepiece.security.ajax.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +28,12 @@ public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
         this.authenticationFailureHandler = authenticationFailureHandler;
     }
 
-//    protected AjaxLoginFilter(String defaultFilterProcessesUrl) {
-//        super(defaultFilterProcessesUrl);
-//    }
-
-    // 1. 먼저 attemptAuthentication를 Manager에게 token을 주고 Provider를 통해 인증을 시도한다.
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException, IOException, ServletException {
         AccountLoginReqDto loginReqDto = new ObjectMapper().readValue(req.getReader(), AccountLoginReqDto.class);
         PreAuthorizationToken preAuthorizationToken = loginReqDto.toPreAuthorizationToken();
 
-        log.info("[request start] -> {}",req.getRequestURI());
+        log.info("[request start] -> {}", req.getRequestURI());
 
         return super.getAuthenticationManager().authenticate(preAuthorizationToken);
     }
@@ -50,10 +45,6 @@ public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        AuthenticationFailureHandler handler = (req, res, exception) -> {
-            log.error(exception.getMessage());
-        };
-
-        handler.onAuthenticationFailure(request, response, failed);
+        this.authenticationFailureHandler.onAuthenticationFailure(request, response, failed);
     }
 }
